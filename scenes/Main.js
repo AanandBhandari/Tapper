@@ -63,17 +63,25 @@ class PlayGame extends Phaser.Scene{
         this.createWall(game.config.width - 32, game.config.height / 2, 32, game.config.height - 96);
         this.createWall(game.config.width / 2, 32, game.config.width - 32, 32);
         this.lowerWall = this.createWall(game.config.width / 2, game.config.height - 32, game.config.width - 32, 32);
-        this.physics.add.collider(this.theBall, this.wallGroup, function(ball, wall){
-            this.canActivateWall = true;
-            if(wall.x == this.lowerWall.x && wall.y == this.lowerWall.y){
-                this.ballSpeed += gameOptions.ballSpeedIncrease;
-                let ballVelocity = this.physics.velocityFromAngle(Phaser.Math.Between(220, 320), this.ballSpeed);
-                this.theBall.setVelocity(ballVelocity.x, ballVelocity.y);
-            }
-        }, null, this);
+    //    
         this.input.on("pointerdown", this.activateWall, this);
 
         this.emitter.startFollow(this.theBall);
+    }
+
+    update() {
+        this.physics.add.collider(this.theBall, this.wallGroup, function (ball, wall) {
+            this.canActivateWall = true;
+            if (wall.x == this.lowerWall.x && wall.y == this.lowerWall.y) {
+                this.ballSpeed += gameOptions.ballSpeedIncrease;
+                let ballVelocity = this.physics.velocityFromAngle(Phaser.Math.Between(220, 320), this.ballSpeed);
+                this.theBall.setVelocity(ballVelocity.x, ballVelocity.y);
+                this.incrementScore();
+            }
+        }, null, this);
+        if ((this.theBall.y > game.config.height || this.theBall.y < 0) && !this.gameOver) {
+            this.playOver();
+        }
     }
     createWall(posX, posY, width, height){
         let wall = this.physics.add.image(posX, posY, "wall");
@@ -96,7 +104,7 @@ class PlayGame extends Phaser.Scene{
             this.lowerWall.alpha = 1;
             this.lowerWall.body.checkCollision.none = false;
 
-            // this.incrementScore();
+            
 
             let wallEvent = this.time.addEvent({
                 delay: gameOptions.wallDuration,
@@ -108,11 +116,7 @@ class PlayGame extends Phaser.Scene{
             });
         }
     }
-    update (){
-        if((this.theBall.y > game.config.height || this.theBall.y < 0) && !this.gameOver){
-            this.playOver();
-        }
-    }
+    
 
     // Event Increment Score
     incrementScore () {

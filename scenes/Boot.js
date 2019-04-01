@@ -41,8 +41,10 @@ class Boot extends Phaser.Scene{
 
         if (this.gameState.highScore) {
             this.textValue = 'Highscore : ' + this.gameState.highScore;
+            this.welcomeTextValue = 'Play Again'
         } else {
             this.textValue = 'Welcome';
+            this.welcomeTextValue = 'Play'
         }
 
         this.welcomeText = this.make.text({
@@ -61,7 +63,7 @@ class Boot extends Phaser.Scene{
         this.playAgain = this.make.text({
             x: this.cameras.main.width / 2,
             y: this.cameras.main.height / 2 + 50,
-            text: 'Play Again',
+            text: this.welcomeTextValue,
             origin: 0.5,
             padding: {
                 left: 20,

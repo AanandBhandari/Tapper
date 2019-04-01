@@ -14,6 +14,8 @@ class PlayGame extends Phaser.Scene{
         this.gameOver = false;
         this.canActivateWallLower = true;
         this.canActivateWallUpper = true;
+        this.canActivateWallRight = true;
+        this.canActivateWallLeft = true;
         this.ballSpeed = gameOptions.ballStartSpeed;
 
         this.over = this.sound.add('over');
@@ -68,24 +70,28 @@ class PlayGame extends Phaser.Scene{
         this.input.on("pointerdown", this.activateWall, this);
 
         this.emitter.startFollow(this.theBall);
-    }
-
-    update() {
         this.physics.add.collider(this.theBall, this.wallGroup, function (ball, wall) {
             this.canActivateWallLower = true;
             this.canActivateWallUpper = true;
+            this.canActivateWallRight = true;
+            this.canActivateWallLeft = true;
             if (wall.x == this.lowerWall.x && wall.y == this.lowerWall.y) {
-                console.log('hello');
                 this.ballSpeed += gameOptions.ballSpeedIncrease;
                 let ballVelocity = this.physics.velocityFromAngle(Phaser.Math.Between(220, 320), this.ballSpeed);
                 this.theBall.setVelocity(ballVelocity.x, ballVelocity.y);
                 this.incrementScore();
-            } 
-            if (wall.x == this.rightWall.x && wall.y == this.rightWall.y ) {
-
             }
-            if (wall.x == this.leftWall.x && wall.y == this.leftWall.y ) {
-
+            if (wall.x == this.rightWall.x && wall.y == this.rightWall.y) {
+                this.ballSpeed += gameOptions.ballSpeedIncrease;
+                let ballVelocity = this.physics.velocityFromAngle(Phaser.Math.Between(220, 320), this.ballSpeed);
+                this.theBall.setVelocity(ballVelocity.x, ballVelocity.y);
+                this.incrementScore();
+            }
+            if (wall.x == this.leftWall.x && wall.y == this.leftWall.y) {
+                this.ballSpeed += gameOptions.ballSpeedIncrease;
+                let ballVelocity = this.physics.velocityFromAngle(Phaser.Math.Between(220, 320), this.ballSpeed);
+                this.theBall.setVelocity(ballVelocity.x, ballVelocity.y);
+                this.incrementScore();
             }
             if (wall.x == this.upperWall.x && wall.y == this.upperWall.y) {
                 this.ballSpeed += gameOptions.ballSpeedIncrease;
@@ -94,6 +100,10 @@ class PlayGame extends Phaser.Scene{
                 this.incrementScore();
             }
         }, null, this);
+    }
+
+    update() {
+        
         if ((this.theBall.y > game.config.height || this.theBall.y < 0) && !this.gameOver) {
             this.playOver();
         }
@@ -112,16 +122,18 @@ class PlayGame extends Phaser.Scene{
             this.theBall.setVelocity(ballVelocity.x, ballVelocity.y);
             this.lowerWall.alpha = 0.1;
             this.upperWall.alpha = 0.1;
+            this.leftWall.alpha = 0.1;
+            this.rightWall.alpha = 0.1;
             this.lowerWall.body.checkCollision.none = true;
             this.upperWall.body.checkCollision.none = true;
+            this.rightWall.body.checkCollision.none = true;
+            this.leftWall.body.checkCollision.none = true;
             return;
         }
         if(this.canActivateWallLower){
-            this.canActivateWall = false;
+            this.canActivateWallLower = false;
             this.lowerWall.alpha = 1;
             this.lowerWall.body.checkCollision.none = false;
-            
-
             let wallEvent = this.time.addEvent({
                 delay: gameOptions.wallDuration,
                 callbackScope: this,
@@ -133,17 +145,41 @@ class PlayGame extends Phaser.Scene{
         }
 
         if (this.canActivateWallUpper) {
-            this.canActivateWall = false;
+            this.canActivateWallUpper = false;
             this.upperWall.alpha = 1;
             this.upperWall.body.checkCollision.none = false;
-
-
             let wallEvent = this.time.addEvent({
                 delay: gameOptions.wallDuration,
                 callbackScope: this,
                 callback: function () {
                     this.upperWall.alpha = 0.1;
                     this.upperWall.body.checkCollision.none = true;
+                }
+            });
+        }
+        if (this.canActivateWallRight) {
+            this.canActivateWallRight = false;
+            this.rightWall.alpha = 1;
+            this.rightWall.body.checkCollision.none = false;
+            let wallEvent = this.time.addEvent({
+                delay: gameOptions.wallDuration,
+                callbackScope: this,
+                callback: function () {
+                    this.rightWall.alpha = 0.1;
+                    this.rightWall.body.checkCollision.none = true;
+                }
+            });
+        }
+        if (this.canActivateWallLeft) {
+            this.canActivateWallLeft = false;
+            this.leftWall.alpha = 1;
+            this.leftWall.body.checkCollision.none = false;
+            let wallEvent = this.time.addEvent({
+                delay: gameOptions.wallDuration,
+                callbackScope: this,
+                callback: function () {
+                    this.leftWall.alpha = 0.1;
+                    this.leftWall.body.checkCollision.none = true;
                 }
             });
         }
